@@ -12,7 +12,7 @@ using System.Text;
 namespace SleepAidTrackerApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly ILogger<SupplementController> logger;

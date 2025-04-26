@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SleepAidTrackerApi.Models;
-using SleepAidTrackerApi.Models.DTO;
+using SleepAidTrackerApi.Models.DTO.Base;
 
 namespace SleepAidTrackerApi
 {
@@ -8,17 +8,16 @@ namespace SleepAidTrackerApi
     {
         public AutoMapperProfile()
         {
+            // Base
+            CreateMap<Dose, DoseDTO>()
+                .ReverseMap();
             CreateMap<Supplement, SupplementDTO>()
                 .ReverseMap();
-
-            CreateMap<Dose, AddSleepDoseDTO>()
+            CreateMap<SleepDTO, Sleep>()
+                .ForMember(dest => dest.Doses, opt => opt.MapFrom(src => src.Doses))
                 .ReverseMap();
 
-            CreateMap<AddSleepDTO, Sleep>()
-                .ForMember(dest => dest.Doses, opt => opt.MapFrom(src => src.Doses));
-
-            CreateMap<Dose, AddDoseDTO>()
-                .ReverseMap();
+            // Action
         }
     }
 }

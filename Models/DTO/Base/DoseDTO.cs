@@ -1,18 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SleepAidTrackerApi.Models.DTO
+namespace SleepAidTrackerApi.Models.DTO.Base
 {
-    public class AddDoseDTO
+    public class DoseDTO
     {
         [Required]
-        public string UserId { get; set; } = null!;
+        public int? Id { get; set; }
+
         [Required]
-        public int SleepId { get; set; }
-        [Required] 
         public int SupplementId { get; set; }
 
         [Required]
-        public double DoseAmount { get; set; }
+        public string DoseAmount { get; set; } = null!;
+
         [Required]
         public DateTime DoseDate { get; set; }
     }

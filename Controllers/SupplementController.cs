@@ -8,11 +8,13 @@ using SleepAidTrackerApi.Data;
 using SleepAidTrackerApi.Data.Repository;
 using SleepAidTrackerApi.Models;
 using SleepAidTrackerApi.Models.DTO;
+using SleepAidTrackerApi.Models.DTO.Base;
+using System.Security.Claims;
 
 namespace SleepAidTrackerApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [Authorize]
     public class SupplementController : Controller
     {
@@ -64,13 +66,18 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpGet]
         [Route("GetUserSupplements")]
-        public async Task<ActionResult> GetUserSupplements(string userId)
+        public async Task<ActionResult<List<SupplementDTO>>> GetUserSupplements()
         {
             try
             {
-                List<Supplement> supplements = await supplementRepository.GetUserSupplements(userId);
+                string userId = User.FindFirstValue("uid")!;
 
-                return Ok(supplements);
+                List<Supplement> supplements = await supplementRepository.GetUserSupplements(userId);
+                List<SupplementDTO> dtos = new();
+
+                mapper.Map(supplements, dtos);
+
+                return Ok(dtos);
             }
             catch (Exception ex)
             {

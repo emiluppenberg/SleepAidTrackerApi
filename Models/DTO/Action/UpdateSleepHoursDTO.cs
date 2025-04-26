@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SleepAidTrackerApi.Models.DTO
+namespace SleepAidTrackerApi.Models.DTO.Action
 {
-    public class UpdateSleepDateDTO
+    public class UpdateSleepHoursDTO
     {
         [Required]
         public int SleepId { get; set; }
         [Required]
-        public DateTime NewDate { get; set; }
+        public double NewHoursOfSleep { get; set; }
     }
 }

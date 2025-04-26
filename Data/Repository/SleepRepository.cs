@@ -19,7 +19,9 @@ namespace SleepAidTrackerApi.Data.Repository
 
         public async Task<Sleep?> GetByIdAsync(int sleepId)
         {
-            return await context.Sleeps.FindAsync(sleepId);
+            return await context.Sleeps
+                .Include(x => x.Doses)
+                .FirstOrDefaultAsync(x => x.Id == sleepId);
         }
 
         public void Update(Sleep sleep)

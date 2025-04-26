@@ -96,6 +96,7 @@ namespace SleepAidTrackerApi.Data
                     Id = 8,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
                     HoursOfSleep = 7.5,
+                    MinutesOfSleepDisruption = 5,
                     SleepDate = new DateTime(2025, 4, 23)
                 },
                 new Sleep()
@@ -103,6 +104,7 @@ namespace SleepAidTrackerApi.Data
                     Id = 9,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
                     HoursOfSleep = 5,
+                    MinutesOfSleepDisruption = 5,
                     SleepDate = new DateTime(2025, 4, 24)
                 }
                 );

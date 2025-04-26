@@ -7,10 +7,13 @@ using SleepAidTrackerApi.Data;
 using SleepAidTrackerApi.Data.Repository;
 using SleepAidTrackerApi.Models;
 using SleepAidTrackerApi.Models.DTO;
+using SleepAidTrackerApi.Models.DTO.Action;
+using SleepAidTrackerApi.Models.DTO.Base;
+using System.Security.Claims;
 
 namespace SleepAidTrackerApi.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class DoseController : ControllerBase
@@ -30,7 +33,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPost]
         [Route("AddDose")]
-        public async Task<ActionResult> AddDose([FromBody] AddDoseDTO dto)
+        public async Task<ActionResult> AddDose([FromBody] DoseDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -110,18 +113,24 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpGet]
         [Route("GetSupplementDoses/{supplementId}")]
-        public async Task<ActionResult> GetSupplementDoses(int supplementId)
+        public async Task<ActionResult<List<DoseDTO>>> GetSupplementDoses(int supplementId)
         {
             try
             {
-                List<Dose> doses = await doseRepository.GetSupplementDosesAsync(supplementId);
+                string userId = User.FindFirstValue("uid")!;
+
+                List<Dose> doses = await doseRepository.GetSupplementDosesAsync(supplementId, userId);
 
                 if (doses.Count < 1)
                 {
                     return NotFound("No dose records found");
                 }
 
-                return Ok(doses);
+                List<DoseDTO> dtos = new();
+
+                mapper.Map(doses, dtos);
+
+                return Ok(dtos);
             }
             catch (Exception ex)
             {

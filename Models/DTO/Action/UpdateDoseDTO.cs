@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SleepAidTrackerApi.Models.DTO
+namespace SleepAidTrackerApi.Models.DTO.Action
 {
     public class UpdateDoseDTO
     {
