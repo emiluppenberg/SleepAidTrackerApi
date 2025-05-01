@@ -16,6 +16,7 @@ namespace SleepAidTrackerApi.Models
         [Required]
         public DateTime SleepDate { get; set; }
         public double? MinutesOfSleepDisruption { get; set; }
+        public string? Note { get; set; }
 
         public virtual IdentityUser User { get; set; } = null!;
         public virtual ICollection<Dose> Doses { get; set; } = null!;

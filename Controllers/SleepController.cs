@@ -33,7 +33,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPost]
         [Route("PostAddSleep")]
-        public async Task<ActionResult> PostAddSleep([FromBody] SleepDTO dto)
+        public async Task<ActionResult<SleepDTO>> PostAddSleep([FromBody] SleepDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -41,11 +41,12 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
-                string userId = User.FindFirstValue("uid")!;
-
                 Sleep sleep = new();
-                mapper.Map(dto, sleep);
+
+                string userId = User.FindFirstValue("uid")!;
                 sleep.UserId = userId;
+
+                mapper.Map(dto, sleep);
                 foreach (var d in sleep.Doses)
                 {
                     d.UserId = userId;
@@ -53,11 +54,12 @@ namespace SleepAidTrackerApi.Controllers
 
                 await sleepRepository.AddAsync(sleep);
                 await sleepRepository.SaveChangesAsync();
-                return Ok();
+
+                return Ok(sleep);
             }
             catch (Exception ex)
             {
-                return Problem(ex.InnerException.ToString());
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
@@ -87,18 +89,13 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch(Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return Problem(ex.InnerException.ToString());
-                }
-
-                return Problem(ex.Message);
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
         [HttpPut]
         [Route("PutEditSleep")]
-        public async Task<ActionResult> PutEditSleep(SleepDTO dto)
+        public async Task<ActionResult<SleepDTO>> PutEditSleep(SleepDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -108,7 +105,7 @@ namespace SleepAidTrackerApi.Controllers
             try
             {
                 string userId = User.FindFirstValue("uid")!;
-                Sleep? sleep = await sleepRepository.GetByIdAsync(dto.Id!.Value);
+                Sleep? sleep = await sleepRepository.GetByIdAsync(dto.Id);
 
                 if (sleep == null)
                 {
@@ -124,16 +121,11 @@ namespace SleepAidTrackerApi.Controllers
                 sleepRepository.Update(sleep);
                 await sleepRepository.SaveChangesAsync();
 
-                return Ok();
+                return Ok(dto);
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return Problem(ex.InnerException.ToString());
-                }
-
-                return Problem(ex.Message);
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
@@ -153,38 +145,64 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return Problem(ex.InnerException.ToString());
-                }
-
-                return Problem(ex.Message);
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
         [HttpGet]
-        [Route("GetUserSleeps/{userId}")]
-        public async Task<ActionResult> GetUserSleeps(string userId)
+        [Route("GetAllUserSleeps")]
+        public async Task<ActionResult<List<SleepDTO>>> GetAllUserSleeps()
         {
             try
             {
-                List<Sleep> sleeps = await sleepRepository.GetUserSleeps(userId);
+                string userId = User.FindFirstValue("uid");
+
+                List<Sleep> sleeps = await sleepRepository.GetAllUserSleeps(userId);
 
                 if (sleeps.Count < 1)
                 {
                     return NotFound("No sleep records found");
                 }
 
-                return Ok(sleeps);
+                List<SleepDTO> dtos = new();
+                mapper.Map(sleeps, dtos);
+
+                return Ok(dtos);
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetUserSleep/{sleepId}")]
+        public async Task<ActionResult<SleepDTO>> GetUserSleep(int sleepId)
+        {
+            try
+            {
+                string userId = User.FindFirstValue("uid");
+                
+                Sleep? sleep = await sleepRepository.GetByIdAsync(sleepId);
+
+                if (sleep == null)
                 {
-                    return Problem(ex.InnerException.ToString());
+                    return NotFound("Sleep record not found");
                 }
 
-                return Problem(ex.Message);
+                if (sleep.UserId != userId)
+                {
+                    return Unauthorized();
+                }
+
+                SleepDTO dto = new();
+                mapper.Map(sleep, dto);
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
     }

@@ -47,7 +47,7 @@ namespace SleepAidTrackerApi.Data.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Sleep>> GetUserSleeps(string userId)
+        public async Task<List<Sleep>> GetAllUserSleeps(string userId)
         {
             return await context.Sleeps
                 .Where(x => x.UserId == userId)

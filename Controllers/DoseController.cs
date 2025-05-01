@@ -52,7 +52,7 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch (Exception ex)
             {
-                return Problem(ex.InnerException.ToString());
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
@@ -82,7 +82,7 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch (Exception ex)
             {
-                return Problem(ex.InnerException.ToString());
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
@@ -102,12 +102,7 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return Problem(ex.InnerException.ToString());
-                }
-
-                return Problem(ex.Message);
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
 
@@ -134,12 +129,7 @@ namespace SleepAidTrackerApi.Controllers
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return Problem(ex.InnerException.ToString());
-                }
-
-                return Problem(ex.Message);
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
             }
         }
     }
