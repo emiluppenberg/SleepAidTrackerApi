@@ -31,9 +31,35 @@ namespace SleepAidTrackerApi.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
+        [Route("GetSupplement")]
+        public async Task<ActionResult<SupplementDTO>> GetSupplement(int supplementId)
+        {
+            try
+            {
+                string userId = User.FindFirstValue("uid");
+
+                Supplement supplement = await supplementRepository.GetByIdAsync(supplementId);
+
+                if (userId != supplement.UserId)
+                {
+                    return Unauthorized();
+                }
+
+                SupplementDTO dto = new();
+                mapper.Map(supplement, dto);
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
         [HttpPost]
-        [Route("PostAddSupplement")]
-        public async Task<ActionResult> PostAddSupplement([FromBody] SupplementDTO dto)
+        [Route("PostSupplement")]
+        public async Task<ActionResult> PostSupplement([FromBody] SupplementDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -54,6 +80,41 @@ namespace SleepAidTrackerApi.Controllers
                 await supplementRepository.SaveChangesAsync();
 
                 return Ok(supplement);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateSupplement")]
+        public async Task<ActionResult<SupplementDTO>> UpdateSupplement([FromBody] SupplementDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Problem();
+            }
+            try
+            {
+                string userId = User.FindFirstValue("uid");
+                Supplement? supplement = await supplementRepository.GetByIdAsync(dto.Id);
+
+                if (supplement == null)
+                {
+                    return NotFound("Supplement not found");
+                }
+
+                if (supplement.UserId != userId)
+                {
+                    return Unauthorized();
+                }
+
+                mapper.Map(dto, supplement);
+                supplementRepository.Update(supplement);
+                await supplementRepository.SaveChangesAsync();
+
+                return Ok(dto);
             }
             catch (Exception ex)
             {

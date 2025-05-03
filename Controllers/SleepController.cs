@@ -32,8 +32,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpPost]
-        [Route("PostAddSleep")]
-        public async Task<ActionResult<SleepDTO>> PostAddSleep([FromBody] SleepDTO dto)
+        [Route("PostSleep")]
+        public async Task<ActionResult<SleepDTO>> PostSleep([FromBody] SleepDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -64,8 +64,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetEditSleep")]
-        public async Task<ActionResult<SleepDTO>> GetEditSleep(int sleepId)
+        [Route("GetSleep")]
+        public async Task<ActionResult<SleepDTO>> GetSleep(int sleepId)
         {
             try
             {
@@ -94,8 +94,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpPut]
-        [Route("PutEditSleep")]
-        public async Task<ActionResult<SleepDTO>> PutEditSleep(SleepDTO dto)
+        [Route("UpdateSleep")]
+        public async Task<ActionResult<SleepDTO>> UpdateSleep(SleepDTO dto)
         {
             if (!ModelState.IsValid)
             {
