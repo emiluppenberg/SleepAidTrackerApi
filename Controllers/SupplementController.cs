@@ -122,6 +122,26 @@ namespace SleepAidTrackerApi.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("DeleteSupplement/{supplementId}")]
+        public async Task<ActionResult> DeleteSleep(int supplementId)
+        {
+            try
+            {
+                if (await supplementRepository.DeleteAsync(supplementId))
+                {
+                    await supplementRepository.SaveChangesAsync();
+                    return Ok();
+                }
+
+                return NotFound("Supplement was not found");
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("GetUserSupplements")]
         public async Task<ActionResult<List<SupplementDTO>>> GetUserSupplements()

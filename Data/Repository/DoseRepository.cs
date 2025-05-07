@@ -45,10 +45,10 @@ namespace SleepAidTrackerApi.Data.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Dose>> GetSupplementDosesAsync(int supplementId, string userId)
+        public async Task<List<Dose>> GetSupplementDosesAsync(int supplementId)
         {
             return await context.Doses
-                .Where(x => x.SupplementId == supplementId && x.UserId == userId)
+                .Where(x => x.SupplementId == supplementId)
                 .ToListAsync();
         }
     }
