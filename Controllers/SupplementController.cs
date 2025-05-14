@@ -59,7 +59,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPost]
         [Route("PostSupplement")]
-        public async Task<ActionResult> PostSupplement([FromBody] SupplementDTO dto)
+        public async Task<ActionResult<SupplementDTO>> PostSupplement([FromBody] SupplementDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -67,19 +67,16 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
+                Supplement supplement = new();
                 string userId = User.FindFirstValue("uid");
+                supplement.UserId = userId;
 
-                Supplement supplement = new()
-                {
-                    Name = dto.Name,
-                    Unit = dto.Unit,
-                    UserId = userId
-                };
+                mapper.Map(dto, supplement);
 
                 await supplementRepository.AddAsync(supplement);
                 await supplementRepository.SaveChangesAsync();
 
-                return Ok(supplement);
+                return Ok(dto);
             }
             catch (Exception ex)
             {
@@ -143,8 +140,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserSupplements")]
-        public async Task<ActionResult<List<SupplementDTO>>> GetUserSupplements()
+        [Route("GetAllUserSupplements")]
+        public async Task<ActionResult<List<SupplementDTO>>> GetAllUserSupplements()
         {
             try
             {

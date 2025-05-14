@@ -13,6 +13,6 @@ namespace SleepAidTrackerApi.Models.DTO.Base
         [Required]
         public string Unit { get; set; } = null!;
 
-        public ICollection<DoseDTO>? Doses { get; set; }
+        //public ICollection<DoseDTO>? Doses { get; set; }
     }
 }

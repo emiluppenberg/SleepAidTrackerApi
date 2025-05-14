@@ -54,8 +54,8 @@ namespace SleepAidTrackerApi.Controllers
 
                 await sleepRepository.AddAsync(sleep);
                 await sleepRepository.SaveChangesAsync();
-
-                return Ok(sleep);
+                dto.Id = sleep.Id;
+                return Ok(dto);
             }
             catch (Exception ex)
             {

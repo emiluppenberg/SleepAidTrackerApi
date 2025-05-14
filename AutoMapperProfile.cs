@@ -11,10 +11,11 @@ namespace SleepAidTrackerApi
             // Base
             CreateMap<Dose, DoseDTO>()
                 .ReverseMap();
+
             CreateMap<Supplement, SupplementDTO>()
                 .ReverseMap();
+
             CreateMap<SleepDTO, Sleep>()
-                .ForMember(dest => dest.Doses, opt => opt.MapFrom(src => src.Doses))
                 .ReverseMap();
 
             // Action
