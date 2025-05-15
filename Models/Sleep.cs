@@ -19,6 +19,6 @@ namespace SleepAidTrackerApi.Models
         public string? Note { get; set; }
 
         public virtual IdentityUser User { get; set; } = null!;
-        public virtual ICollection<Dose> Doses { get; set; } = null!;
+        public virtual List<Dose> Doses { get; set; } = new();
     }
 }

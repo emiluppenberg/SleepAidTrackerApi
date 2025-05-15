@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SleepAidTrackerApi.Models;
+using SleepAidTrackerApi.Models.DTO.Action;
 using SleepAidTrackerApi.Models.DTO.Base;
 
 namespace SleepAidTrackerApi
@@ -15,7 +16,7 @@ namespace SleepAidTrackerApi
             CreateMap<Supplement, SupplementDTO>()
                 .ReverseMap();
 
-            CreateMap<SleepDTO, Sleep>()
+            CreateMap<Sleep, SleepDTO>()
                 .ReverseMap();
 
             // Action

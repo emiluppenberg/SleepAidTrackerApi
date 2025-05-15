@@ -33,7 +33,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPost]
         [Route("PostSleep")]
-        public async Task<ActionResult<SleepDTO>> PostSleep([FromBody] SleepDTO dto)
+        public async Task<ActionResult<SleepDosesDTO>> PostSleep([FromBody] SleepDosesDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -41,12 +41,12 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
-                Sleep sleep = new();
-
                 string userId = User.FindFirstValue("uid")!;
-                sleep.UserId = userId;
 
-                mapper.Map(dto, sleep);
+                Sleep sleep = new();
+                mapper.Map(dto.Sleep, sleep);
+                mapper.Map(dto.Doses, sleep.Doses);
+                sleep.UserId = userId;
                 foreach (var d in sleep.Doses)
                 {
                     d.UserId = userId;
@@ -54,7 +54,8 @@ namespace SleepAidTrackerApi.Controllers
 
                 await sleepRepository.AddAsync(sleep);
                 await sleepRepository.SaveChangesAsync();
-                dto.Id = sleep.Id;
+                mapper.Map(sleep, dto.Sleep);
+                mapper.Map(sleep.Doses, dto.Doses);
                 return Ok(dto);
             }
             catch (Exception ex)
@@ -95,7 +96,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPut]
         [Route("UpdateSleep")]
-        public async Task<ActionResult<SleepDTO>> UpdateSleep(SleepDTO dto)
+        public async Task<ActionResult<SleepDosesDTO>> UpdateSleep([FromBody] SleepDosesDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -105,21 +106,27 @@ namespace SleepAidTrackerApi.Controllers
             try
             {
                 string userId = User.FindFirstValue("uid")!;
-                Sleep? sleep = await sleepRepository.GetByIdAsync(dto.Id);
+                Sleep? sleep = await sleepRepository.GetByIdAsync(dto.Sleep.Id);
 
                 if (sleep == null)
                 {
                     return NotFound("Sleep record not found");
                 }
-
                 if (sleep.UserId != userId)
                 {
                     return Unauthorized();
                 }
 
-                mapper.Map(dto, sleep);
+                mapper.Map(dto.Sleep, sleep);
+                mapper.Map(dto.Doses, sleep.Doses);
+                foreach (var d in sleep.Doses)
+                {
+                    d.UserId = userId;
+                }
                 sleepRepository.Update(sleep);
                 await sleepRepository.SaveChangesAsync();
+                mapper.Map(sleep, dto.Sleep);
+                mapper.Map(sleep.Doses, dto.Doses);
 
                 return Ok(dto);
             }

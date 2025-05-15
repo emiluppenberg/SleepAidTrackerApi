@@ -32,8 +32,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpPost]
-        [Route("PostDose")]
-        public async Task<ActionResult<DoseDTO>> PostDose([FromBody] DoseDTO dto)
+        [Route("PostDoses")]
+        public async Task<ActionResult<List<DoseDTO>>> PostDoses([FromBody] List<DoseDTO> dtos)
         {
             if (!ModelState.IsValid)
             {
@@ -41,17 +41,20 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
-                Dose dose = new();
-
                 string userId = User.FindFirstValue("uid");
-                dose.UserId = userId;
+                List<Dose> doses = new();
+                mapper.Map(dtos, doses);
 
-                mapper.Map(dto, dose);
+                foreach (var d in doses)
+                {
+                    d.UserId = userId;
+                    await doseRepository.AddAsync(d);
+                }
 
-                await doseRepository.AddAsync(dose);
                 await doseRepository.SaveChangesAsync();
-                dto.Id = dose.Id;
-                return Ok(dto);
+                mapper.Map(doses, dtos);
+
+                return Ok(dtos);
             }
             catch (Exception ex)
             {
