@@ -5,13 +5,13 @@ namespace SleepAidTrackerApi.Models.DTO.Base
     public class DoseDTO
     {
         [Required]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public int SupplementId { get; set; }
 
         [Required]
-        public string UserId { get; set; } = null!;
+        public int SleepId { get; set; }
 
         [Required]
         public double DoseAmount { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SleepAidTrackerApi.Models;
+using SleepAidTrackerApi.Models.DTO.Base;
 
 namespace SleepAidTrackerApi.Data.Repository
 {
@@ -45,10 +46,28 @@ namespace SleepAidTrackerApi.Data.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Dose>> GetSupplementDosesAsync(int supplementId, string userId)
+        public async Task<List<Dose>> GetSupplementDosesAsync(int supplementId)
         {
             return await context.Doses
-                .Where(x => x.SupplementId == supplementId && x.UserId == userId)
+                .Where(x => x.SupplementId == supplementId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Dose>> GetAllUserDosesAsync(string userId)
+        {
+            return await context.Doses
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Dose>> GetDosesAsync(List<DoseDTO> dtos)
+        {
+            List<int> ids = dtos
+                .Select(x => x.Id)
+                .ToList();
+
+            return await context.Doses
+                .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
         }
     }

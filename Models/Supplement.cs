@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SleepAidTrackerApi.Models.DTO.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,5 +15,6 @@ namespace SleepAidTrackerApi.Models
 
         [Required]
         public virtual IdentityUser User { get; set; } = null!;
+        public virtual ICollection<Dose>? Doses { get; set; }
     }
 }

@@ -31,9 +31,61 @@ namespace SleepAidTrackerApi.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
+        [Route("GetSupplement")]
+        public async Task<ActionResult<SupplementDTO>> GetSupplement(int supplementId)
+        {
+            try
+            {
+                string userId = User.FindFirstValue("uid");
+
+                Supplement supplement = await supplementRepository.GetByIdAsync(supplementId);
+
+                if (userId != supplement.UserId)
+                {
+                    return Unauthorized();
+                }
+
+                SupplementDTO dto = new();
+                mapper.Map(supplement, dto);
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
         [HttpPost]
-        [Route("PostAddSupplement")]
-        public async Task<ActionResult> PostAddSupplement([FromBody] SupplementDTO dto)
+        [Route("PostSupplement")]
+        public async Task<ActionResult<SupplementDTO>> PostSupplement([FromBody] SupplementDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Problem();
+            }
+            try
+            {
+                Supplement supplement = new();
+                string userId = User.FindFirstValue("uid");
+                supplement.UserId = userId;
+
+                mapper.Map(dto, supplement);
+                await supplementRepository.AddAsync(supplement);
+                await supplementRepository.SaveChangesAsync();
+                dto.Id = supplement.Id;
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateSupplement")]
+        public async Task<ActionResult<SupplementDTO>> UpdateSupplement([FromBody] SupplementDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -42,18 +94,43 @@ namespace SleepAidTrackerApi.Controllers
             try
             {
                 string userId = User.FindFirstValue("uid");
+                Supplement? supplement = await supplementRepository.GetByIdAsync(dto.Id);
 
-                Supplement supplement = new()
+                if (supplement == null)
                 {
-                    Name = dto.Name,
-                    Unit = dto.Unit,
-                    UserId = userId
-                };
+                    return NotFound("Supplement not found");
+                }
 
-                await supplementRepository.AddAsync(supplement);
+                if (supplement.UserId != userId)
+                {
+                    return Unauthorized();
+                }
+
+                mapper.Map(dto, supplement);
+                supplementRepository.Update(supplement);
                 await supplementRepository.SaveChangesAsync();
 
-                return Ok(supplement);
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteSupplement/{supplementId}")]
+        public async Task<ActionResult> DeleteSleep(int supplementId)
+        {
+            try
+            {
+                if (await supplementRepository.DeleteAsync(supplementId))
+                {
+                    await supplementRepository.SaveChangesAsync();
+                    return Ok();
+                }
+
+                return NotFound("Supplement was not found");
             }
             catch (Exception ex)
             {
@@ -62,8 +139,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserSupplements")]
-        public async Task<ActionResult<List<SupplementDTO>>> GetUserSupplements()
+        [Route("GetAllUserSupplements")]
+        public async Task<ActionResult<List<SupplementDTO>>> GetAllUserSupplements()
         {
             try
             {

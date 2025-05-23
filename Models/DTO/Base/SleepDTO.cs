@@ -14,6 +14,6 @@ namespace SleepAidTrackerApi.Models.DTO.Base
         public string? Note { get; set; }
         public double? MinutesOfSleepDisruption { get; set; }
 
-        public ICollection<DoseDTO> Doses { get; set; } = new List<DoseDTO>();
+        //public ICollection<DoseDTO> Doses { get; set; } = new List<DoseDTO>();
     }
 }
