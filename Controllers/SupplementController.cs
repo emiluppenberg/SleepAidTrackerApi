@@ -72,10 +72,9 @@ namespace SleepAidTrackerApi.Controllers
                 supplement.UserId = userId;
 
                 mapper.Map(dto, supplement);
-
                 await supplementRepository.AddAsync(supplement);
                 await supplementRepository.SaveChangesAsync();
-
+                dto.Id = supplement.Id;
                 return Ok(dto);
             }
             catch (Exception ex)
