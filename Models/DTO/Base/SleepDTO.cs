@@ -7,13 +7,16 @@ namespace SleepAidTrackerApi.Models.DTO.Base
         [Required]
         public int Id { get; set; }
         [Required]
-        public double HoursOfSleep { get; set; }
+        public double TotalHours { get; set; }
         [Required]
         public DateTime SleepDate { get; set; }
+        [Required]
+        public TimeSpan Bedtime { get; set; }
+        [Required]
+        public TimeSpan Waketime { get; set; }
 
+        public double? BedtimeHR { get; set; }
         public string? Note { get; set; }
-        public double? MinutesOfSleepDisruption { get; set; }
-
-        public ICollection<DoseDTO> Doses { get; set; } = new List<DoseDTO>();
+        public double? DisruptionCount { get; set; }
     }
 }

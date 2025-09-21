@@ -50,6 +50,7 @@ namespace SleepAidTrackerApi.Data.Repository
         public async Task<List<Sleep>> GetAllUserSleeps(string userId)
         {
             return await context.Sleeps
+                .Include(x => x.Doses)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
         }

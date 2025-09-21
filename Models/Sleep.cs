@@ -12,13 +12,19 @@ namespace SleepAidTrackerApi.Models
         public string UserId { get; set; } = null!;
 
         [Required]
-        public double HoursOfSleep { get; set; }
+        public double TotalHours { get; set; }
         [Required]
         public DateTime SleepDate { get; set; }
-        public double? MinutesOfSleepDisruption { get; set; }
+        [Required]
+        public TimeSpan Bedtime { get; set; }
+        [Required]
+        public TimeSpan Waketime { get; set; }
+
+        public double? BedtimeHR { get; set; }
+        public double? DisruptionCount { get; set; }
         public string? Note { get; set; }
 
         public virtual IdentityUser User { get; set; } = null!;
-        public virtual ICollection<Dose> Doses { get; set; } = null!;
+        public virtual List<Dose> Doses { get; set; } = new();
     }
 }

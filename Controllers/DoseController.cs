@@ -32,8 +32,8 @@ namespace SleepAidTrackerApi.Controllers
         }
 
         [HttpPost]
-        [Route("AddDose")]
-        public async Task<ActionResult> AddDose([FromBody] DoseDTO dto)
+        [Route("PostDoses")]
+        public async Task<ActionResult<List<DoseDTO>>> PostDoses([FromBody] List<DoseDTO> dtos)
         {
             if (!ModelState.IsValid)
             {
@@ -41,14 +41,20 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
-                Dose dose = new();
+                string userId = User.FindFirstValue("uid");
+                List<Dose> doses = new();
+                mapper.Map(dtos, doses);
 
-                mapper.Map(dto, dose);
+                foreach (var d in doses)
+                {
+                    d.UserId = userId;
+                    await doseRepository.AddAsync(d);
+                }
 
-                await doseRepository.AddAsync(dose);
                 await doseRepository.SaveChangesAsync();
+                mapper.Map(doses, dtos);
 
-                return Ok(dose);
+                return Ok(dtos);
             }
             catch (Exception ex)
             {
@@ -58,7 +64,7 @@ namespace SleepAidTrackerApi.Controllers
 
         [HttpPut]
         [Route("UpdateDose")]
-        public async Task<ActionResult> UpdateDose([FromBody] UpdateDoseDTO dto)
+        public async Task<ActionResult<DoseDTO>> UpdateDose([FromBody] DoseDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -66,19 +72,23 @@ namespace SleepAidTrackerApi.Controllers
             }
             try
             {
-                Dose? dose = await doseRepository.GetByIdAsync(dto.DoseId);
+                string userId = User.FindFirstValue("uid");
+                Dose? dose = await doseRepository.GetByIdAsync(dto.Id);
 
                 if (dose == null)
                 {
                     return NotFound("Dose record not found");
                 }
+                if (dose.UserId != userId)
+                {
+                    return Unauthorized();
+                }
 
-                dose.SupplementId = dto.NewSupplementId;
-                dose.DoseAmount = dto.NewDoseAmount;
+                mapper.Map(dto, dose);
                 doseRepository.Update(dose);
                 await doseRepository.SaveChangesAsync();
 
-                return Ok(dose);
+                return Ok(dto);
             }
             catch (Exception ex)
             {
@@ -92,13 +102,20 @@ namespace SleepAidTrackerApi.Controllers
         {
             try
             {
-                if (await doseRepository.DeleteAsync(doseId))
+                string userId = User.FindFirstValue("uid");
+                Dose? dose = await doseRepository.GetByIdAsync(doseId);
+
+                if (dose.UserId != userId)
                 {
-                    await doseRepository.SaveChangesAsync();
-                    return Ok();
+                    return Unauthorized();
+                }
+                if (!await doseRepository.DeleteAsync(doseId))
+                {
+                    return NotFound("Dose record not found");
                 }
 
-                return NotFound("Dose record not found");
+                await doseRepository.SaveChangesAsync();
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -113,8 +130,36 @@ namespace SleepAidTrackerApi.Controllers
             try
             {
                 string userId = User.FindFirstValue("uid")!;
+                List<Dose> doses = await doseRepository.GetSupplementDosesAsync(supplementId);
 
-                List<Dose> doses = await doseRepository.GetSupplementDosesAsync(supplementId, userId);
+                if (doses.Count < 1)
+                {
+                    return NotFound("No dose records found");
+                }
+                if (!doses.Any(x => x.UserId == userId))
+                {
+                    return Unauthorized();
+                }
+
+                List<DoseDTO> dtos = new();
+                mapper.Map(doses, dtos);
+
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.InnerException?.ToString() ?? ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllUserDoses")]
+        public async Task<ActionResult<List<DoseDTO>>> GetAllUserDoses()
+        {
+            try
+            {
+                string userId = User.FindFirstValue("uid")!;
+                List<Dose> doses = await doseRepository.GetAllUserDosesAsync(userId);
 
                 if (doses.Count < 1)
                 {
@@ -122,7 +167,6 @@ namespace SleepAidTrackerApi.Controllers
                 }
 
                 List<DoseDTO> dtos = new();
-
                 mapper.Map(doses, dtos);
 
                 return Ok(dtos);
