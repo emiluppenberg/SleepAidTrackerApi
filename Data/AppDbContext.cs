@@ -74,37 +74,37 @@ namespace SleepAidTrackerApi.Data
                 {
                     Id = 5,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
-                    HoursOfSleep = 4.5,
+                    TotalHours = 4.5,
                     SleepDate = new DateTime(2025, 4, 20)
                 },
                 new Sleep()
                 {
                     Id = 6,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
-                    HoursOfSleep = 6,
+                    TotalHours = 6,
                     SleepDate = new DateTime(2025, 4, 21)
                 },
                 new Sleep()
                 {
                     Id = 7,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
-                    HoursOfSleep = 5.5,
+                    TotalHours = 5.5,
                     SleepDate = new DateTime(2025, 4, 22)
                 },
                 new Sleep()
                 {
                     Id = 8,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
-                    HoursOfSleep = 7.5,
-                    MinutesOfSleepDisruption = 5,
+                    TotalHours = 7.5,
+                    DisruptionCount = 5,
                     SleepDate = new DateTime(2025, 4, 23)
                 },
                 new Sleep()
                 {
                     Id = 9,
                     UserId = "31e2241d-da6a-4825-883e-6b6bd0e37db0",
-                    HoursOfSleep = 5,
-                    MinutesOfSleepDisruption = 5,
+                    TotalHours = 5,
+                    DisruptionCount = 5,
                     SleepDate = new DateTime(2025, 4, 24)
                 }
                 );
